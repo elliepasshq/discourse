@@ -5,13 +5,9 @@ class CreateElliepassIntegrationState < ActiveRecord::Migration[7.0]
     create_table :elliepass_integration_states do |t|
       t.integer :policy_version, null: false, default: 0
 
-      t.jsonb :guarded_actions,
-              null: false,
-              default: {}
+      t.jsonb :guarded_actions, null: false, default: {}
 
-      t.jsonb :verification_requirements,
-              null: false,
-              default: {}
+      t.jsonb :verification_requirements, null: false, default: {}
 
       t.string :push_token_hash
 

@@ -8,66 +8,40 @@ module ::Elliepass
     skip_before_action :verify_authenticity_token
 
     def invalidate
-      PolicyStateService.authenticate_push_token(
-        bearer_token,
-      )
+      PolicyStateService.authenticate_push_token(bearer_token)
 
-      external_user_id =
-        params.require(:external_user_id).to_s
+      external_user_id = params.require(:external_user_id).to_s
 
-      user =
-        User.find_by(
-          id: external_user_id,
-        )
+      user = User.find_by(id: external_user_id)
 
       if user.nil?
-        render json: {
-          status: "not_found",
-        }, status: 404
+        render json: { status: "not_found" }, status: :not_found
 
         return
       end
 
-      AuthorizationService.clear(
-        user,
-      )
+      AuthorizationService.clear(user)
 
       DebugLogger.log(
         "authorization_cache_invalidated",
-        {
-          user_id: user.id,
-          username: user.username,
-        },
+        { user_id: user.id, username: user.username },
       )
 
-      render json: {
-        status: "success",
-      }
+      render json: { status: "success" }
     rescue PolicyStateService::AuthenticationError
-      render json: {
-        status: "error",
-        message: "Unauthorized.",
-      }, status: 401
+      render json: { status: "error", message: "Unauthorized." }, status: :unauthorized
     rescue ActionController::ParameterMissing => e
-      render json: {
-        status: "error",
-        message: e.message,
-      }, status: 422
+      render json: { status: "error", message: e.message }, status: :unprocessable_entity
     end
 
     private
 
     def bearer_token
-      header =
-        request.headers["Authorization"].to_s
+      header = request.headers["Authorization"].to_s
 
-      return nil unless header.start_with?(
-        "Bearer "
-      )
+      return nil unless header.start_with?("Bearer ")
 
-      header.delete_prefix(
-        "Bearer "
-      ).strip.presence
+      header.delete_prefix("Bearer ").strip.presence
     end
   end
 end

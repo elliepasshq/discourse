@@ -12,8 +12,7 @@ module Elliepass
         # Never lock admins/moderators out.
         return nil if user.staff?
 
-        trace_id =
-          Elliepass::DebugLogger.trace_id
+        trace_id = Elliepass::DebugLogger.trace_id
 
         capability = capability_for(manager)
 
@@ -31,12 +30,7 @@ module Elliepass
 
         return nil unless capability
 
-        authorization =
-          Elliepass::AuthorizationService.check(
-            user,
-            capability,
-            trace_id: trace_id,
-          )
+        authorization = Elliepass::AuthorizationService.check(user, capability, trace_id: trace_id)
 
         if authorization[:allowed]
           Elliepass::DebugLogger.log(
@@ -62,9 +56,7 @@ module Elliepass
           },
         )
 
-        failed_result(
-          authorization,
-        )
+        failed_result(authorization)
       end
 
       private
@@ -78,54 +70,33 @@ module Elliepass
           # Let Discourse produce its normal missing-topic error.
           return nil unless topic
 
-          if topic.archetype == Archetype.private_message
-            return "reply_private_message"
-          end
+          return "reply_private_message" if topic.archetype == Archetype.private_message
 
           return "reply_content"
         end
 
-        if manager.args[:archetype] == Archetype.private_message
-          return "create_private_message"
-        end
+        return "create_private_message" if manager.args[:archetype] == Archetype.private_message
 
         "create_content"
       end
 
       def failed_result(authorization)
-        result =
-          NewPostResult.new(
-            :elliepass,
-            false,
-          )
+        result = NewPostResult.new(:elliepass, false)
 
-        if authorization[:reason] ==
-          "elliepass_unavailable"
-          result.errors.add(
-            :base,
-            I18n.t(
-              "elliepass.posting.unavailable"
-            ),
-          )
+        if authorization[:reason] == "elliepass_unavailable"
+          result.errors.add(:base, I18n.t("elliepass.posting.unavailable"))
 
           return result
         end
 
         # Generic marker telling the browser this is an
         # ElliePass requirements checklist response.
-        result.errors.add(
-          :base,
-          I18n.t(
-            "elliepass.posting.checklist"
-          ),
-        )
+        result.errors.add(:base, I18n.t("elliepass.posting.checklist"))
 
-        requirements =
-          authorization[:durable_requirements] || {}
+        requirements = authorization[:durable_requirements] || {}
 
         requirements.each do |type, requirement|
-          requirement =
-            requirement.symbolize_keys
+          requirement = requirement.symbolize_keys
 
           next unless requirement[:required] == true
 
@@ -140,74 +111,34 @@ module Elliepass
 
           case type.to_s
           when "human"
-            add_checklist_error(
-              result,
-              "human",
-              status,
-            )
-
+            add_checklist_error(result, "human", status)
           when "identity"
-            add_checklist_error(
-              result,
-              "identity",
-              status,
-            )
-
+            add_checklist_error(result, "identity", status)
           when "age"
-            minimum_age =
-              requirement[:minimum_age].to_i
+            minimum_age = requirement[:minimum_age].to_i
 
-            add_checklist_error(
-              result,
-              "age",
-              status,
-              minimum_age: minimum_age,
-            )
-
+            add_checklist_error(result, "age", status, minimum_age: minimum_age)
           when "id_verified_location"
-            add_checklist_error(
-              result,
-              "id_location",
-              status,
-            )
+            add_checklist_error(result, "id_location", status)
           end
         end
 
         if authorization[:location_required]
-          status =
-            authorization[:location_satisfied] ?
-              "met" :
-              "needed"
+          status = authorization[:location_satisfied] ? "met" : "needed"
 
-          add_checklist_error(
-            result,
-            "current_location",
-            status,
-          )
+          add_checklist_error(result, "current_location", status)
         end
 
         result
       end
 
-      def add_checklist_error(
-        result,
-        requirement,
-        status,
-        **options
-      )
+      def add_checklist_error(result, requirement, status, **options)
         key =
           "elliepass.posting.checklist_" \
-          "#{requirement}_#{status}"
+            "#{requirement}_#{status}"
 
-        result.errors.add(
-          :base,
-          I18n.t(
-            key,
-            **options,
-          ),
-        )
+        result.errors.add(:base, I18n.t(key, **options))
       end
-
     end
   end
 end

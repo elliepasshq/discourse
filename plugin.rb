@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # name: elliepass
 # about: ElliePass verification integration for Discourse communities
 # version: 1.0.0
@@ -7,9 +8,7 @@
 enabled_site_setting :elliepass_enabled
 register_svg_icon "arrows-rotate"
 
-add_admin_route "elliepass.admin_navigation",
-                "elliepass",
-                use_new_show_route: true
+add_admin_route "elliepass.admin_navigation", "elliepass", use_new_show_route: true
 
 module ::Elliepass
   PLUGIN_NAME = "elliepass"
@@ -32,21 +31,13 @@ after_initialize do
     elliepass_community_secret
   ]
 
-  DiscourseEvent.on(:site_setting_changed) do |name, _old_value, _new_value|
-    next unless connection_settings.include?(name.to_sym)
+  on(:site_setting_changed) do |name, _old_value, _new_value|
+    next if connection_settings.exclude?(name.to_sym)
 
     Jobs.enqueue(:elliepass_connect)
   end
 
-  NewPostManager.add_handler(100) do |manager|
-    Elliepass::PostingEnforcer.call(manager)
-  end
+  NewPostManager.add_handler(100) { |manager| Elliepass::PostingEnforcer.call(manager) }
 
-  if SiteSetting.elliepass_enabled
-    Jobs.enqueue_in(
-      10.seconds,
-      :elliepass_connect,
-      startup: true,
-    )
-  end
+  Jobs.enqueue_in(10.seconds, :elliepass_connect, startup: true) if SiteSetting.elliepass_enabled
 end

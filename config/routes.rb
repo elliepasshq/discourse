@@ -5,7 +5,7 @@ Elliepass::Engine.routes.draw do
   get "/verify" => "verification#start"
 
   get "/verify/complete" => "verification#complete"
-  
+
   post "/member/invalidate" => "member#invalidate"
 
   # Admin connection page
@@ -18,6 +18,4 @@ Elliepass::Engine.routes.draw do
   post "/policy" => "policy#update"
 end
 
-Discourse::Application.routes.draw do
-  mount ::Elliepass::Engine, at: "/elliepass"
-end
+Discourse::Application.routes.draw { mount ::Elliepass::Engine, at: "/elliepass" }

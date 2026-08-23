@@ -6,38 +6,31 @@ require "json"
 
 module Elliepass
   class ApiClient
-    class Error < StandardError; end
+    class Error < StandardError
+    end
 
     def self.connect
-        new.connect
+      new.connect
     end
 
     def self.member_status(user)
-        new.member_status(user)
+      new.member_status(user)
     end
 
     def self.authorize_member(user, capability, trace_id: nil)
-      new.authorize_member(
-        user,
-        capability,
-        trace_id: trace_id,
-      )
+      new.authorize_member(user, capability, trace_id: trace_id)
     end
 
     def self.start_verification(user, return_url: nil)
-        new.start_verification(user, return_url: return_url)
+      new.start_verification(user, return_url: return_url)
     end
 
-
     def member_status(user)
-        post(
-            "/api/v1/community/member/status",
-            {
-            external_user_id: user.id.to_s,
-            external_username: user.username,
-            },
-        )
-    end  
+      post(
+        "/api/v1/community/member/status",
+        { external_user_id: user.id.to_s, external_username: user.username },
+      )
+    end
 
     def authorize_member(user, capability, trace_id: nil)
       post(
@@ -52,36 +45,26 @@ module Elliepass
     end
 
     def initialize
-        @base_url = SiteSetting.elliepass_api_url.to_s.sub(%r{/$}, "")
-        @community_key = SiteSetting.elliepass_community_key
-        @community_secret = SiteSetting.elliepass_community_secret
+      @base_url = SiteSetting.elliepass_api_url.to_s.sub(%r{/$}, "")
+      @community_key = SiteSetting.elliepass_community_key
+      @community_secret = SiteSetting.elliepass_community_secret
     end
 
     def connect
-        post(
-            "/api/v1/community/connect",
-            {
-            community_key: @community_key,
-            secret: @community_secret,
-            integration_version: "0.1.0",
-            },
-        )
+      post(
+        "/api/v1/community/connect",
+        { community_key: @community_key, secret: @community_secret, integration_version: "0.1.0" },
+      )
     end
-   
+
     def start_verification(user, return_url: nil)
-        body = {
-            external_user_id: user.id.to_s,
-            external_username: user.username,
-        }
+      body = { external_user_id: user.id.to_s, external_username: user.username }
 
-        body[:return_url] = return_url if return_url.present?
+      body[:return_url] = return_url if return_url.present?
 
-        post(
-            "/api/v1/community/member/verification/start",
-            body,
-        )
+      post("/api/v1/community/member/verification/start", body)
     end
-    
+
     private
 
     def post(path, body, trace_id: nil)
@@ -102,9 +85,7 @@ module Elliepass
           use_ssl: uri.scheme == "https",
           open_timeout: 5,
           read_timeout: 10,
-        ) do |http|
-          http.request(request)
-        end
+        ) { |http| http.request(request) }
 
       parsed =
         begin
@@ -121,6 +102,5 @@ module Elliepass
     rescue Timeout::Error, SocketError, Errno::ECONNREFUSED => e
       raise Error, "Unable to reach ElliePass API: #{e.message}"
     end
-
   end
 end

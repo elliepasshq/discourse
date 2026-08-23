@@ -16,7 +16,7 @@ module ::Elliepass
 
     layout "no_ember"
 
-    skip_before_action :check_xhr, only: [:start, :complete]
+    skip_before_action :check_xhr, only: %i[start complete]
 
     def start
       remember_return_path
@@ -33,31 +33,20 @@ module ::Elliepass
       #
       # Do NOT clear the durable snapshot here. Existing Human, Identity,
       # Age, and ID-verified-location results remain valid and reusable.
-      AuthorizationService.clear_location(
-        current_user,
-      )
-      
-      return_url =
-        "#{Discourse.base_url}/elliepass/verify/complete"
+      AuthorizationService.clear_location(current_user)
 
-      result =
-        ApiClient.start_verification(
-          current_user,
-          return_url: return_url,
-        )
+      return_url = "#{Discourse.base_url}/elliepass/verify/complete"
+
+      result = ApiClient.start_verification(current_user, return_url: return_url)
 
       if result["qualified"] == true
-        AuthorizationService.clear(
-          current_user,
-        )
+        AuthorizationService.clear(current_user)
 
         redirect_back_to_community
         return
       end
 
-      url =
-        result["checkout_url"].presence ||
-          result["verification_url"].presence
+      url = result["checkout_url"].presence || result["verification_url"].presence
 
       if url.present?
         redirect_to url, allow_other_host: true
@@ -66,46 +55,35 @@ module ::Elliepass
 
       Rails.logger.error(
         "[ElliePass] Verification start failed " \
-        "user_id=#{current_user.id} " \
-        "reason=#{result["reason"].inspect}"
+          "user_id=#{current_user.id} " \
+          "reason=#{result["reason"].inspect}",
       )
 
       render_error_page
     rescue ApiClient::Error => e
       Rails.logger.error(
         "[ElliePass] Verification API error " \
-        "user_id=#{current_user&.id} " \
-        "error=#{e.message.inspect}"
+          "user_id=#{current_user&.id} " \
+          "error=#{e.message.inspect}",
       )
 
       render_error_page
     end
 
     def complete
-      AuthorizationService.clear(
-        current_user,
-      )
+      AuthorizationService.clear(current_user)
 
       DebugLogger.log(
         "authorization_cache_cleared_after_verification",
-        {
-          user_id: current_user.id,
-          username: current_user.username,
-        },
+        { user_id: current_user.id, username: current_user.username },
       )
 
-      result =
-        params[:elliepass_result].to_s
+      result = params[:elliepass_result].to_s
 
-      reason =
-        params[:elliepass_reason].to_s
+      reason = params[:elliepass_reason].to_s
 
-      if result == "location_failed" &&
-        LOCATION_FAILURE_REASONS.include?(reason)
-        redirect_back_to_community(
-          elliepass_result: "location_failed",
-          elliepass_reason: reason,
-        )
+      if result == "location_failed" && LOCATION_FAILURE_REASONS.include?(reason)
+        redirect_back_to_community(elliepass_result: "location_failed", elliepass_reason: reason)
 
         return
       end
@@ -116,13 +94,11 @@ module ::Elliepass
     private
 
     def remember_return_path
-      requested_path =
-        params[:return_to].to_s
+      requested_path = params[:return_to].to_s
 
       return if requested_path.blank?
 
-      session[:elliepass_return_path] =
-        safe_return_path(requested_path)
+      session[:elliepass_return_path] = safe_return_path(requested_path)
     end
 
     def safe_return_path(path)
@@ -134,69 +110,37 @@ module ::Elliepass
     end
 
     def community_return_path
-      safe_return_path(
-        session[:elliepass_return_path].presence || "/"
-      )
+      safe_return_path(session[:elliepass_return_path].presence || "/")
     end
 
-    def redirect_back_to_community(
-      result_params = {}
-    )
-      path =
-        community_return_path
+    def redirect_back_to_community(result_params = {})
+      path = community_return_path
 
-      session.delete(
-        :elliepass_return_path
-      )
+      session.delete(:elliepass_return_path)
 
-      if result_params.present?
-        path =
-          append_result_params(
-            path,
-            result_params,
-          )
-      end
+      path = append_result_params(path, result_params) if result_params.present?
 
       redirect_to path
     end
 
-    def append_result_params(
-      path,
-      result_params
-    )
-      path_without_fragment,
-        fragment =
-          path.split("#", 2)
+    def append_result_params(path, result_params)
+      path_without_fragment, fragment = path.split("#", 2)
 
-      separator =
-        path_without_fragment.include?("?") ?
-          "&" :
-          "?"
+      separator = path_without_fragment.include?("?") ? "&" : "?"
 
-      query =
-        Rack::Utils.build_query(
-          result_params
-        )
+      query = Rack::Utils.build_query(result_params)
 
-      result =
-        "#{path_without_fragment}#{separator}#{query}"
+      result = "#{path_without_fragment}#{separator}#{query}"
 
-      if fragment.present?
-        result =
-          "#{result}##{fragment}"
-      end
+      result = "#{result}##{fragment}" if fragment.present?
 
       result
     end
 
     def render_error_page
-      @elliepass_return_path =
-        community_return_path
+      @elliepass_return_path = community_return_path
 
-      render(
-        template: "elliepass/verification/error",
-        status: :service_unavailable,
-      )
+      render(template: "elliepass/verification/error", status: :service_unavailable)
     end
   end
 end

@@ -12,14 +12,9 @@ module Elliepass
       def log(event, data = {})
         return unless SiteSetting.elliepass_debug_logging
 
-        details =
-          data.map do |key, value|
-            "#{key}=#{value.inspect}"
-          end.join(" ")
+        details = data.map { |key, value| "#{key}=#{value.inspect}" }.join(" ")
 
-        Rails.logger.info(
-          "[ElliePass DEBUG] #{event} #{details}".strip
-        )
+        Rails.logger.info("[ElliePass DEBUG] #{event} #{details}".strip)
       end
     end
   end
