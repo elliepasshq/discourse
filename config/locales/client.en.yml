@@ -1,0 +1,66 @@
+en:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          elliepass: "ElliePass"
+  js:
+    elliepass:
+      placeholder: placeholder
+      admin:
+        title: "ElliePass"
+        settings_setup:
+          title: "Set up ElliePass Community"
+          description: "Use ElliePass Community Admin to add or manage this community and get the connection settings to enter below."
+          cta: "Open ElliePass Community →"
+        connection:
+          title: "Connection"
+          last_checked_at: "Last checked"
+          last_success_at: "Last successful connection"
+          test: "Test connection"
+          test_success: "Connection test succeeded."
+          test_failed: "Connection test failed. Check the message above."
+          status_unavailable: "Connection status is unavailable"
+          not_configured_help: "Enter your Community Key and Secret above."
+          statuses:
+            connected: "Connected to ElliePass"
+            failed: "Connection failed"
+            not_configured: "Not configured"
+            not_checked: "Not checked"
+            unknown: "Connection failed"
+      posting:
+        unavailable: "ElliePass is temporarily unavailable, so posting eligibility could not be confirmed. Please try again."
+      
+        checklist: "ElliePass requirements check."
+       
+        checklist_human_needed: "Human verification requires attention."
+        checklist_human_met: "Human verification requirement met."
+        checklist_human_blocked: "Human verification requirement not met."
+
+        checklist_identity_needed: "Identity verification requires attention."
+        checklist_identity_met: "Identity verification requirement met."
+        checklist_identity_blocked: "Identity verification requirement not met."
+
+        checklist_age_needed: "Age %{minimum_age}+ requires attention."
+        checklist_age_met: "Age %{minimum_age}+ requirement met."
+        checklist_age_blocked: "Age %{minimum_age}+ requirement not met."
+
+        checklist_id_location_needed: "ID-verified location requires attention."
+        checklist_id_location_met: "ID-verified location requirement met."
+        checklist_id_location_blocked: "ID-verified location requirement not met."
+
+        checklist_current_location_needed: "Current location requires attention."
+        checklist_current_location_met: "Current location requirement met."            
+
+      verification_dialog:
+        location_failed_message: "We couldn't confirm that your current location meets this community's requirement. You can check your location again."
+        location_mismatch_message: "Your current location does not meet this community's requirements."
+        location_result_title: "Location requirement not met"
+        check_location: "Check location again"
+        id_location_failed_message: "The location verified from your ID does not meet this community's requirement."
+        id_location_result_title: "ID-verified location requirement not met"
+
+        cancel: "Cancel"
+        continue: "Continue with ElliePass"
+        close: "Close"
+        

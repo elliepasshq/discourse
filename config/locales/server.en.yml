@@ -1,0 +1,32 @@
+en:
+  elliepass:
+    admin_navigation: "ElliePass"
+    posting:
+      unavailable: "ElliePass is temporarily unavailable, so posting eligibility could not be confirmed. Please try again."
+      checklist: "ElliePass requirements check."
+
+      checklist_human_needed: "Human verification requires attention."
+      checklist_human_met: "Human verification requirement met."
+      checklist_human_blocked: "Human verification requirement not met."
+
+      checklist_identity_needed: "Identity verification requires attention."
+      checklist_identity_met: "Identity verification requirement met."
+      checklist_identity_blocked: "Identity verification requirement not met."
+
+      checklist_age_needed: "Age %{minimum_age}+ requires attention."
+      checklist_age_met: "Age %{minimum_age}+ requirement met."
+      checklist_age_blocked: "Age %{minimum_age}+ requirement not met."
+
+      checklist_id_location_needed: "ID-verified location requires attention."
+      checklist_id_location_met: "ID-verified location requirement met."
+      checklist_id_location_blocked: "ID-verified location requirement not met."
+
+      checklist_current_location_needed: "Current location requires attention."
+      checklist_current_location_met: "Current location requirement met."
+
+  site_settings:
+    elliepass_enabled: "Enable ElliePass verification integration"
+    elliepass_api_url: "ElliePass API URL"
+    elliepass_community_key: "Community Key"
+    elliepass_community_secret: "Community Secret"
+    elliepass_debug_logging: "Enable verbose ElliePass integration debug logging."

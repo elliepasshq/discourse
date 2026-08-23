@@ -1,0 +1,28 @@
+<div class="container">
+  <div class="elliepass-verification-error">
+    <h1>
+      Unable to continue with ElliePass
+    </h1>
+
+    <p>
+      We couldn't start the verification required by this community.
+      Please try again in a moment.
+    </p>
+
+    <div class="buttons">
+      <a
+        href="/elliepass/verify"
+        class="btn btn-primary"
+      >
+        Try again
+      </a>
+
+      <a
+        href="<%= @elliepass_return_path %>"
+        class="btn"
+      >
+        Back to community
+      </a>
+    </div>
+  </div>
+</div>
