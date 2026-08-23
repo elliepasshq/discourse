@@ -64,16 +64,30 @@ cd /var/discourse
 ./launcher rebuild app
 ```
 
+### Enable ElliePass
+
+After the rebuild completes:
+
+1. Sign in to Discourse as an administrator.
+2. Go to **Admin → Plugins → Installed plugins**.
+3. Find **ElliePass** and enable it.
+4. Refresh the administrator screen.
+5. Click **Settings** or **ElliePass** to continue setup.
+
 ## ElliePass Setup
 
 Before configuring the plugin, create a community in ElliePass.
 
 1. Sign in to ElliePass.
-2. Create a new community.
-3. Select **Discourse** as the platform.
-4. Enter your Discourse community URL.
-5. Configure the verification requirements and protected actions for your community.
-6. Copy the ElliePass Community Key and Community Secret.
+2. Click **Add Community**.
+3. Enter your Discourse community name and URL.
+4. Select **Discourse** as the platform.
+5. On the community setup page, click **Generate connection settings**.
+6. Copy the **API URL**, **Community Key**, and **Community Secret** into the ElliePass plugin settings in Discourse, then click **Save all changes**.
+7. Confirm that the plugin shows **Connected to ElliePass**.
+8. Return to ElliePass Community Admin and configure the verification requirements and protected actions for your community.
+9. Your community is now ready to require ElliePass verification.
+
 
 ## Discourse Configuration
 

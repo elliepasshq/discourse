@@ -1,6 +1,6 @@
 # name: elliepass
 # about: ElliePass verification integration for Discourse communities
-# version: 0.1.0
+# version: 1.0.0
 # authors: ElliePass
 # required_version: 3.0.0
 
