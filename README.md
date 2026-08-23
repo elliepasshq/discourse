@@ -54,7 +54,7 @@ hooks:
     - exec:
         cd: $home/plugins
         cmd:
-          - git clone https://github.com/elliepasshq/discourse.git
+          - git clone https://github.com/elliepasshq/discourse.git elliepass
 ```
 
 Then rebuild Discourse:
